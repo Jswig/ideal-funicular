@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Time
 import Url
 
 
@@ -22,12 +23,13 @@ main =
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
+    , time : Time.Posix
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( Model key url, Cmd.none )
+    ( Model key url (Time.millisToPosix 0), Cmd.none )
 
 
 type Msg
@@ -57,27 +59,39 @@ subscriptions _ =
     Sub.none
 
 
-navBar : Html msg
-navBar =
-    ul []
-        [ viewLink "/home"
-        , viewLink "/about"
-        , viewLink "/blog"
-        , viewLink "/code"
-        ]
-
-
 view : Model -> Browser.Document Msg
 view model =
     { title = "URL Interceptor"
     , body =
-        [ text "The current URL is: "
+        [ mainHeader
+        , text "The current URL is: "
         , b [] [ text (Url.toString model.url) ]
-        , navBar
+        , mainFooter
         ]
     }
 
 
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
+mainHeader : Html msg
+mainHeader =
+    header []
+        [ text "Anders Poirel", navBar ]
+
+
+navBar : Html msg
+navBar =
+    div []
+        [ navBarLink "/home"
+        , navBarLink "/about"
+        , navBarLink "/blog"
+        , navBarLink "/code"
+        ]
+
+
+navBarLink : String -> Html msg
+navBarLink path =
+    div [] [ a [ href path ] [ text path ] ]
+
+
+mainFooter : Html msg
+mainFooter =
+    footer [] [ text "© 2022 Anders Poirel" ]
